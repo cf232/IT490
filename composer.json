@@ -1,0 +1,6 @@
+{
+    "name": "cf232/it490",
+    "require": {
+        "php-amqplib/php-amqplib": "^2.10"
+    }
+}
