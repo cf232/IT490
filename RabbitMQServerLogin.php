@@ -3,38 +3,21 @@
 require_once('path.inc');
 require_once('get_host_info.inc');
 require_once('rabbitMQLib.inc');
-include('config.php');
-session_start();
+include("account.php")
 
 function login($user,$pass){
-	//TODO validate user credentials
-	$sql = "SELECT id FROM login WHERE username = '$user' AND password = '$pass'";
-	$result = mysqli_query($db,$sql);
-	$row = mysqli_fetch_array($result,MYSQLI_ASSOC);
-	$active = $row['active'];
-	$count = mysqli_num_rows($result);
-	  
-	if($count == 1) {
-	   session_register("myusername");
-	   $_SESSION['login_user'] = $user;
-	   return $row["id"];
-	}else {
-	   $error = "Your Login Name or Password is invalid";
-	}
-	return true;
+	// $database = new $login();
+	// $response = $database->validateLogin($username)
+	$msg = new AMQPMessage($user, $pass);
+	$server->basic_publish($msg, 'sql');
 }
 
+function validate($session_id){
+	
+}
 function doEcho($req){
 	$req['message'] = "Echo " . $req['message'];
 	return $req;
-}
-
-function getUserData($req){
-	$id = $req['id']
-	$sql2 = "SELECT * FROM login WHERE id = $id";
-	$result = mysqli_query($db, $sql2);
-
-	return $result;
 }
 
 function request_processor($req){
@@ -53,8 +36,6 @@ function request_processor($req){
 			return validate($req['session_id']);
 		case "echo":
 			return doEcho($req);
-		case "getUserData":
-			return getUserData($req['id']);
 	}
 	return array("return_code" => '0',
 		"message" => "Server received request and processed it");
@@ -63,7 +44,11 @@ function request_processor($req){
 $server = new rabbitMQServer("testRabbitMQ.ini", "sampleServer");
 
 echo "Rabbit MQ Server Start" . PHP_EOL;
+$server->exchange_declare('logs','fanout','false', 'false', 'false');
+$server->queue_declare('sql', 'false','true','false','false');
+$server->queue_bind()
 $server->process_requests('request_processor');
 echo "Rabbit MQ Server Stop" . PHP_EOL;
 exit();
+
 ?>

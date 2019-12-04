@@ -182,7 +182,7 @@ class rabbitMQClient
 				true,
 				false
 			);*/
-		$this->channel->basic_consume($this->callback_queue, '', false, true, false, false,
+		$this->channel->basic_consume($this->callback_queue, '', false, false, false, false,
 		array($this, 'process_response'));
 	}
 	function send_request($message){
