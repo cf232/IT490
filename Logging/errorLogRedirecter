@@ -1,0 +1,15 @@
+void SomeMethod()
+{
+    // Create a file for output .txt.
+    Stream debugFile = File.Create(fileName);
+
+    // create TextWriterTraceListener named "file"
+    TextWriterTraceListener debugWriter = new TextWriterTraceListener(debugFile, "file");
+
+    // add to debug listeners
+    Debug.Listeners.Add(debugWriter);
+    // set callstack to be shown
+    Debug.Listeners["file"].TraceOutputOptions |= TraceOptions.Callstack;
+    // set auto-flush
+    Debug.AutoFlush = true;
+}
